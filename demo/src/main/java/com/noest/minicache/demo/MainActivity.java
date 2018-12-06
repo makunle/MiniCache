@@ -1,7 +1,7 @@
 package com.noest.minicache.demo;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -13,7 +13,6 @@ import com.noest.minicache.MiniCache;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -53,9 +52,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        MiniCache.init(getCacheDir().getAbsolutePath());
+        String init = MiniCache.init(getCacheDir().getAbsolutePath());
+
+        if (init == null) {
+            print("init failed");
+        }
 
         miniCache = MiniCache.getDefaultCache();
+        miniCache = MiniCache.getCache("default");
 
         createRandomKV(times);
 

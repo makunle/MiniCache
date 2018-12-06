@@ -26,16 +26,26 @@ public class MiniCache {
     /**
      * init cache folder, if not exist create it
      *
-     * @param cacheFolder
-     * @return
+     * @return cache file path
      */
     public static String init(String cacheFolder) {
         File file = new File(cacheFolder);
         if (file.exists() && file.isFile()) {
-            throw new IllegalArgumentException(cacheFolder + " is not folder");
+            // folder path exist, and is a file
+            return null;
         }
-        File folder = new File(cacheFolder, "minicach");
-        folder.mkdirs();
+        File folder = new File(cacheFolder, "minicache");
+        if (folder.exists() && folder.isFile()) {
+            // folder path exist, and is a file
+            return null;
+        }
+        if (!folder.exists()) {
+            boolean success = folder.mkdirs();
+            if (!success) {
+                // make cache folder failed
+                return null;
+            }
+        }
         sCacheFolder = folder.getAbsolutePath();
         return sCacheFolder;
     }
@@ -46,6 +56,9 @@ public class MiniCache {
 
     private MmapOperator mOperator;
 
+    /**
+     * create with id(file name)
+     */
     public static MiniCache getCache(String id) {
         if (sCacheFolder == null) {
             throw new IllegalStateException("need call MiniCache.init() first");
@@ -56,20 +69,20 @@ public class MiniCache {
         File cacheFile = new File(sCacheFolder, id);
 
         if (!cacheFile.exists()) {
-            boolean success = false;
             try {
-                success = cacheFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
+                boolean success = cacheFile.createNewFile();
                 if (!success) {
                     throw new IllegalStateException("create cache file failed , check permission or storage");
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 
         MiniCache miniCache = new MiniCache();
         miniCache.mOperator = new MmapOperator(cacheFile.getAbsolutePath());
+
+        cacheMap.put(id, miniCache);
         return miniCache;
     }
 

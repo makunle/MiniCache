@@ -3,16 +3,16 @@ package com.noest.minicache;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 
-public class DataWrapUtil {
+class DataWrapUtil {
     /**
      * for item split, if some data broken, can protect useful data
      */
-    public static final byte SPLIT_MARK = 0x52;
+    private static final byte SPLIT_MARK = 0x52;
 
     /**
      * wrapped data format is : len(4 byte) data(len byte)
      */
-    public static byte[] getWrappedData(ByteBuffer buffer) {
+    static byte[] getWrappedData(ByteBuffer buffer) {
         if (buffer.remaining() < 4) {
             return null;
         }
@@ -29,11 +29,11 @@ public class DataWrapUtil {
      * wrap a set of bytes, two bytes is one group
      * each group have one sum
      */
-    public static void wrapData(ByteBuffer buffer, byte[]... datas) {
-        int len = getWrappedLen(datas);
-        if (buffer.remaining() < len) {
-            // todo
-        }
+    static void wrapData(ByteBuffer buffer, byte[]... datas) {
+//        int len = getWrappedLen(datas);
+//        if (buffer.remaining() < len) {
+//            // todo
+//        }
         byte sum = checkSum(datas);
         buffer.put(SPLIT_MARK);
         for (byte[] data : datas) {
@@ -46,7 +46,7 @@ public class DataWrapUtil {
     /**
      * get a set of bytes wrapped len, a set have one byte check sum
      */
-    public static int getWrappedLen(byte[]... datas) {
+    private static int getWrappedLen(byte[]... datas) {
         int len = 2; // checksum + mark
         for (byte[] data : datas) {
             len += 4 + data.length; // datalen(int) + data
@@ -54,7 +54,7 @@ public class DataWrapUtil {
         return len;
     }
 
-    public static int getWrappedLen(int... dataLens) {
+    static int getWrappedLen(int... dataLens) {
         int len = 2; // checksum + mark
         for (int l : dataLens) {
             len += 4 + l; // datalen(int) + data
@@ -65,7 +65,7 @@ public class DataWrapUtil {
     /**
      * simple calculate sum of bytes
      */
-    public static byte checkSum(byte[]... datas) {
+    static byte checkSum(byte[]... datas) {
         if (datas == null) {
             return 0;
         }
@@ -81,7 +81,7 @@ public class DataWrapUtil {
         return sum;
     }
 
-    public static boolean findItemStart(MappedByteBuffer mbb, int rawDataLen) {
+    static boolean findItemStart(MappedByteBuffer mbb, int rawDataLen) {
         while (mbb.get() != SPLIT_MARK) {
             if (mbb.position() > rawDataLen) {
                 return false;

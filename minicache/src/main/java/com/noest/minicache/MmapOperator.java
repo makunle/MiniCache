@@ -67,7 +67,7 @@ public class MmapOperator {
     /**
      * load data from mmap, create {@code mAllData} from mapped file
      */
-    public void loadData() {
+    void loadData() {
         mAllData.clear();
 
         mbb.clear();
@@ -95,6 +95,7 @@ public class MmapOperator {
             if (DataWrapUtil.checkSum(key, value) != sum) {
                 mbb.reset();
             } else {
+                assert key != null;
                 mAllData.put(new String(key), value);
             }
         }
@@ -173,7 +174,7 @@ public class MmapOperator {
         }
     }
 
-    public byte[] get(String key) {
+    byte[] get(String key) {
         return mAllData.get(key);
     }
 
